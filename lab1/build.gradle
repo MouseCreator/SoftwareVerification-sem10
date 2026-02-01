@@ -1,0 +1,19 @@
+plugins {
+    id 'java'
+}
+
+group = 'mouse.univ'
+version = '1.0.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation "org.junit.platform:junit-platform-suite:6.0.2"
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+test {
+    useJUnitPlatform()
+}
