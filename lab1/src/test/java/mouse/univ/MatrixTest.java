@@ -1,6 +1,8 @@
 package mouse.univ;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
 
@@ -141,27 +143,91 @@ class MatrixTest {
         }
     }
 
-    @Test
-    void testConstructor_zero() {
-        int[] sizes = {1, 50, 100};
-        for (int n : sizes) {
-            Matrix z = Matrix.square(n).zero();
+    @ParameterizedTest
+    @ValueSource(ints = {1, 50, 100})
+    void testConstructor_zero(int n) {
+        Matrix z = Matrix.square(n).zero();
 
-            assertEquals(n, z.getNumRows());
-            assertEquals(n, z.getNumColumns());
-            assertAllZero(z);
+        assertEquals(n, z.getNumRows());
+        assertEquals(n, z.getNumColumns());
+        assertAllZero(z);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {1, 50, 100})
+    void testConstructor_unit(int n) {
+        Matrix u = Matrix.square(n).unit();
+
+        assertEquals(n, u.getNumRows());
+        assertEquals(n, u.getNumColumns());
+        assertIdentity(u);
+    }
+
+    private static Matrix randomSquare(int n) {
+        List<Double> numbers = NumberUtils.generateRandomNumbers(n * n);
+        return Matrix.square(n).withNumbers(numbers);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {1, 3, 10, 100})
+    void row_shouldReturnCorrectRowElements(int n) {
+        Matrix matrix = randomSquare(n);
+
+        for (int i = 0; i < n; i++) {
+            List<Double> row = matrix.row(i);
+            assertEquals(n, row.size(), "Row size mismatch for n=" + n);
+
+            for (int j = 0; j < n; j++) {
+                assertEquals(
+                        matrix.at(i, j),
+                        row.get(j),
+                        0.0,
+                        "Mismatch at row(" + i + "), col(" + j + "), n=" + n
+                );
+            }
         }
     }
 
-    @Test
-    void testConstructor_unit() {
-        int[] sizes = {1, 50, 100};
-        for (int n : sizes) {
-            Matrix u = Matrix.square(n).unit();
+    @ParameterizedTest
+    @ValueSource(ints = {1, 3, 10, 100})
+    void column_shouldReturnCorrectColumnElements(int n) {
+        Matrix matrix = randomSquare(n);
 
-            assertEquals(n, u.getNumRows());
-            assertEquals(n, u.getNumColumns());
-            assertIdentity(u);
+        for (int j = 0; j < n; j++) {
+            List<Double> column = matrix.column(j);
+            assertEquals(n, column.size(), "Column size mismatch for n=" + n);
+
+            for (int i = 0; i < n; i++) {
+                assertEquals(
+                        matrix.at(i, j),
+                        column.get(i),
+                        0.0,
+                        "Mismatch at row(" + i + "), col(" + j + "), n=" + n
+                );
+            }
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {1, 3, 10, 100})
+    void asList_shouldReturnAllRowsCorrectly(int n) {
+        Matrix matrix = randomSquare(n);
+
+        List<List<Double>> rows = matrix.asList();
+        assertEquals(n, rows.size(), "Outer list size mismatch for n=" + n);
+
+        for (int i = 0; i < n; i++) {
+            List<Double> row = rows.get(i);
+            assertEquals(n, row.size(), "Row size mismatch at row " + i + ", n=" + n);
+
+            for (int j = 0; j < n; j++) {
+                assertEquals(
+                        matrix.at(i, j),
+                        row.get(j),
+                        0.0,
+                        "Mismatch at row(" + i + "), col(" + j + "), n=" + n
+                );
+            }
         }
     }
 }

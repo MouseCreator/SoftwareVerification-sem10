@@ -214,7 +214,7 @@ public class Matrix {
     public List<List<Double>> asList() {
         List<List<Double>> result = new ArrayList<>(n);
         for (int i = 0; i < n; i++) {
-            result.add(row(i)); // reuse row() implementation
+            result.add(row(i));
         }
         return result;
     }
