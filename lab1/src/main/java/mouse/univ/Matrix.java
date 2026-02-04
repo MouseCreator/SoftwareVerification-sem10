@@ -10,6 +10,9 @@ public class Matrix {
     private final int n;
     private final int m;
 
+    private static final int MAX_ROWS = 100;
+    private static final int MAX_COLS = 100;
+
     public int getNumColumns() {
         return m;
     }
@@ -28,10 +31,22 @@ public class Matrix {
     }
 
     public static SizedMatrixBuilder rect(int n, int m) {
+        if (n > MAX_ROWS) {
+            String err = String.format("Number of rows cannot exceed %d. Given: %d", MAX_ROWS, n);
+            throw new IllegalArgumentException(err);
+        }
+        if (m > MAX_COLS) {
+            String err = String.format("Number of columns cannot exceed %d. Given: %d", MAX_COLS, m);
+            throw new IllegalArgumentException(err);
+        }
         return new SizedMatrixBuilder(n, m);
     }
 
     public static SizedMatrixBuilder square(int n) {
+        if (n > MAX_ROWS) {
+            String err = String.format("Number of rows and columns cannot exceed %d. Given: %d", MAX_ROWS, n);
+            throw new IllegalArgumentException(err);
+        }
         return new SizedMatrixBuilder(n, n);
     }
 
