@@ -121,4 +121,47 @@ class MatrixTest {
         testAllowedNumber(5000);
         testAllowedNumber(-5000);
     }
+
+    private void assertAllZero(Matrix m) {
+        for (int i = 0; i < m.getNumRows(); i++) {
+            for (int j = 0; j < m.getNumColumns(); j++) {
+                assertEquals(0.0, m.at(i, j), "Expected 0 at (" + i + "," + j + ")");
+            }
+        }
+    }
+
+    private void assertIdentity(Matrix m) {
+        int n = m.getNumRows();
+        assertEquals(n, m.getNumColumns(), "Identity matrix must be square");
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                double expected = (i == j) ? 1.0 : 0.0;
+                assertEquals(expected, m.at(i, j), "Wrong value at (" + i + "," + j + ")");
+            }
+        }
+    }
+
+    @Test
+    void testConstructor_zero() {
+        int[] sizes = {1, 50, 100};
+        for (int n : sizes) {
+            Matrix z = Matrix.square(n).zero();
+
+            assertEquals(n, z.getNumRows());
+            assertEquals(n, z.getNumColumns());
+            assertAllZero(z);
+        }
+    }
+
+    @Test
+    void testConstructor_unit() {
+        int[] sizes = {1, 50, 100};
+        for (int n : sizes) {
+            Matrix u = Matrix.square(n).unit();
+
+            assertEquals(n, u.getNumRows());
+            assertEquals(n, u.getNumColumns());
+            assertIdentity(u);
+        }
+    }
 }
