@@ -38,11 +38,26 @@ class MatrixTest {
     @Test
     void testConstructor_throwsOnSizeMismatch() {
         assertThrows(IllegalArgumentException.class, () ->
-        Matrix.rect(2, 3).withNumbers(List.of(
+                Matrix.rect(2, 3).withNumbers(List.of(
                 1, 2, 3,
                 4, 5, 6,
                 7, 8, 9
-        )));
+                )));
+
+        assertThrows(IllegalArgumentException.class, () ->
+                Matrix.rect(2, 3).withNumbers(List.of(
+                        1, 2, 3,
+                        4, 5
+                )));
+
+        assertThrows(IllegalArgumentException.class, () ->
+                Matrix.rect(2, 3).withNumbers(List.of(
+                        1, 2, 3,
+                        4, 5, 6,
+                        7
+                )));
+        assertThrows(IllegalArgumentException.class, () ->
+                Matrix.rect(2, 3).withNumbers(List.of()));
     }
 
     @Test
@@ -71,5 +86,26 @@ class MatrixTest {
     void testConstructor_throwsFor101Rows() {
         List<Double> content = generateRandomNumbers(100 * 101);
         assertThrows(IllegalArgumentException.class, () -> Matrix.rect(100, 101).withNumbers(content));
+    }
+
+    @Test
+    void testConstructor_cannotCreateEmptyMatrix() {
+        assertThrows(IllegalArgumentException.class, () -> Matrix.square(0).withNumbers(List.of()));
+    }
+
+    @Test
+    void testConstructor_cannotCreateNegativeSizedMatrix() {
+        assertThrows(IllegalArgumentException.class, () -> Matrix.square(Integer.MIN_VALUE).withNumbers(List.of()));
+        assertThrows(IllegalArgumentException.class, () -> Matrix.square(Integer.MIN_VALUE/2).withNumbers(List.of()));
+        assertThrows(IllegalArgumentException.class, () -> Matrix.square(-1).withNumbers(List.of()));
+        assertThrows(IllegalArgumentException.class, () -> Matrix.square(-100).withNumbers(List.of()));
+    }
+
+    @Test
+    void testConstructor_cannotCreateLargeSizedMatrix() {
+        assertThrows(IllegalArgumentException.class, () -> Matrix.square(Integer.MAX_VALUE));
+        assertThrows(IllegalArgumentException.class, () -> Matrix.square(Integer.MAX_VALUE/2));
+        assertThrows(IllegalArgumentException.class, () -> Matrix.square(101));
+        assertThrows(IllegalArgumentException.class, () -> Matrix.square(10000));
     }
 }

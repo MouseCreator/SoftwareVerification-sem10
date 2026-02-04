@@ -31,6 +31,9 @@ public class Matrix {
     }
 
     public static SizedMatrixBuilder rect(int n, int m) {
+        if (n <= 0 || m <= 0) {
+            throw new IllegalArgumentException("Matrix cannot be empty");
+        }
         if (n > MAX_ROWS) {
             String err = String.format("Number of rows cannot exceed %d. Given: %d", MAX_ROWS, n);
             throw new IllegalArgumentException(err);
@@ -43,6 +46,9 @@ public class Matrix {
     }
 
     public static SizedMatrixBuilder square(int n) {
+        if (n <= 0) {
+            throw new IllegalArgumentException("Number of rows or columns cannot be 0 or negative");
+        }
         if (n > MAX_ROWS) {
             String err = String.format("Number of rows and columns cannot exceed %d. Given: %d", MAX_ROWS, n);
             throw new IllegalArgumentException(err);
@@ -52,17 +58,17 @@ public class Matrix {
 
     public static Matrix parse(String matrix) {
         if (matrix == null) {
-            return new Matrix(new double[0][0]);
+            throw new IllegalArgumentException("Matrix cannot be empty");
         }
 
         String trimmedAll = matrix.trim();
         if (trimmedAll.isEmpty()) {
-            return new Matrix(new double[0][0]);
+            throw new IllegalArgumentException("Matrix cannot be empty");
         }
         String[] rows = matrix.split("\n", -1);
         int n = rows.length;
         if (n == 0) {
-            return new Matrix(new double[0][0]);
+            throw new IllegalArgumentException("Matrix cannot be empty");
         }
 
         String firstRow = rows[0].trim();
@@ -304,10 +310,6 @@ public class Matrix {
 
     @Override
     public String toString() {
-        if (n == 0 || m == 0) {
-            return "[]";
-        }
-
         int[] colWidths = new int[m];
         for (int j = 0; j < m; j++) {
             int max = 0;
