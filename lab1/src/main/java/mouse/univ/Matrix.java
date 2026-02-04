@@ -50,6 +50,62 @@ public class Matrix {
         return new SizedMatrixBuilder(n, n);
     }
 
+    public static Matrix parse(String matrix) {
+        if (matrix == null) {
+            return new Matrix(new double[0][0]);
+        }
+
+        String trimmedAll = matrix.trim();
+        if (trimmedAll.isEmpty()) {
+            return new Matrix(new double[0][0]);
+        }
+        String[] rows = matrix.split("\n", -1);
+        int n = rows.length;
+        if (n == 0) {
+            return new Matrix(new double[0][0]);
+        }
+
+        String firstRow = rows[0].trim();
+        if (firstRow.isEmpty()) {
+            throw new IllegalArgumentException("Row 0 is empty (missing values)");
+        }
+
+        String[] firstParts = firstRow.split("\\s+");
+        int m = firstParts.length;
+        if (m == 0) {
+            throw new IllegalArgumentException("Row 0 has no values (missing values)");
+        }
+
+        List<Double> numbers = new ArrayList<>(n * m);
+
+        for (int i = 0; i < n; i++) {
+            String row = rows[i].trim();
+            if (row.isEmpty()) {
+                throw new IllegalArgumentException("Row " + i + " is empty (missing values)");
+            }
+
+            String[] parts = row.split("\\s+");
+            if (parts.length != m) {
+                throw new IllegalArgumentException(
+                        "All rows must have the same number of columns. " +
+                                "Expected " + m + " values, but row " + i + " has " + parts.length
+                );
+            }
+
+            for (int j = 0; j < m; j++) {
+                try {
+                    numbers.add(Double.parseDouble(parts[j]));
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException(
+                            "Invalid number at row " + i + ", column " + j + ": '" + parts[j] + "'",
+                            e
+                    );
+                }
+            }
+        }
+        return rect(n, m).withNumbers(numbers);
+    }
+
     public static class SizedMatrixBuilder {
         private final int n;
         private final int m;
