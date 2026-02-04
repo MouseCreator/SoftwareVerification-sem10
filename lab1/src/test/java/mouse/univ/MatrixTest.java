@@ -108,4 +108,17 @@ class MatrixTest {
         assertThrows(IllegalArgumentException.class, () -> Matrix.square(101));
         assertThrows(IllegalArgumentException.class, () -> Matrix.square(10000));
     }
+
+    private void testAllowedNumber(double d) {
+        assertEquals(d, Matrix.square(1).withNumbers(List.of(d)).at(0,0));
+    }
+
+    @Test
+    void testConstructor_allowedMatrixValues() {
+        testAllowedNumber(0);
+        testAllowedNumber(10000);
+        testAllowedNumber(-10000);
+        testAllowedNumber(5000);
+        testAllowedNumber(-5000);
+    }
 }
