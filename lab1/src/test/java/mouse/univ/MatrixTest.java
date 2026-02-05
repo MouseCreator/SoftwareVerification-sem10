@@ -2,9 +2,13 @@ package mouse.univ;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static mouse.univ.NumberUtils.generateRandomNumbers;
 import static org.junit.jupiter.api.Assertions.*;
@@ -163,11 +167,6 @@ class MatrixTest {
         assertIdentity(u);
     }
 
-    private static Matrix randomSquare(int n) {
-        List<Double> numbers = NumberUtils.generateRandomNumbers(n * n);
-        return Matrix.square(n).withNumbers(numbers);
-    }
-
     @ParameterizedTest
     @ValueSource(ints = {1, 3, 10, 100})
     void row_shouldReturnCorrectRowElements(int n) {
@@ -229,5 +228,270 @@ class MatrixTest {
                 );
             }
         }
+    }
+
+    private static Matrix randomRect(int n, int m) {
+        List<Double> nums = NumberUtils.generateRandomNumbers(n * m);
+        return Matrix.rect(n, m).withNumbers(nums);
+    }
+
+    private static Matrix randomSquare(int n) {
+        return randomRect(n, n);
+    }
+
+    private static Matrix zeroSquare(int n) {
+        return Matrix.square(n).zero();
+    }
+
+    private static Matrix identity(int n) {
+        return Matrix.square(n).unit();
+    }
+
+    private static Matrix constantSquare(int n, double value) {
+        List<Double> nums = new ArrayList<>(n * n);
+        for (int i = 0; i < n * n; i++) nums.add(value);
+        return Matrix.square(n).withNumbers(nums);
+    }
+
+    private static void assertMatrixEqualsByAt(Matrix actual, Matrix expected) {
+        assertEquals(expected.getNumRows(), actual.getNumRows(), "Row count mismatch");
+        assertEquals(expected.getNumColumns(), actual.getNumColumns(), "Column count mismatch");
+
+        for (int i = 0; i < expected.getNumRows(); i++) {
+            for (int j = 0; j < expected.getNumColumns(); j++) {
+                assertEquals(expected.at(i, j), actual.at(i, j), 0.0,
+                        "Mismatch at (" + i + "," + j + ")");
+            }
+        }
+    }
+
+    private static Matrix manualDot(Matrix a, Matrix b) {
+        if (a.getNumColumns() != b.getNumRows()) {
+            throw new IllegalArgumentException("Manual dot: incompatible dimensions");
+        }
+        int n = a.getNumRows();
+        int mid = a.getNumColumns();
+        int m = b.getNumColumns();
+        Matrix res = Matrix.rect(n, m).zero();
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                double sum = 0.0;
+                for (int k = 0; k < mid; k++) {
+                    sum += a.at(i, k) * b.at(k, j);
+                }
+                res.set(i, j, sum);
+            }
+        }
+        return res;
+    }
+
+    private static Stream<Arguments> rectangularSameSizePairs() {
+        return Stream.of(
+                Arguments.of(3, 5),
+                Arguments.of(10, 50),
+                Arguments.of(100, 50)
+        );
+    }
+
+    private static Stream<Arguments> dotDifferentSizePairs() {
+        return Stream.of(
+                Arguments.of(3, 5, 5, 2),       // 3x5 · 5x2 -> 3x2
+                Arguments.of(10, 50, 50, 7),    // 10x50 · 50x7 -> 10x7
+                Arguments.of(100, 50, 50, 100)  // 100x50 · 50x100 -> 100x100
+        );
+    }
+
+    // ---------- correct data ----------
+
+    @ParameterizedTest
+    @ValueSource(ints = {1, 50, 100})
+    void testAdd_randomSquareMatrices(int n) {
+        Matrix a = randomSquare(n);
+        Matrix b = randomSquare(n);
+
+        Matrix c = a.add(b);
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                assertEquals(a.at(i, j) + b.at(i, j), c.at(i, j), 0.0,
+                        "Mismatch at (" + i + "," + j + "), n=" + n);
+            }
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {1, 50, 100})
+    void testSubtract_randomSquareMatrices(int n) {
+        Matrix a = randomSquare(n);
+        Matrix b = randomSquare(n);
+
+        Matrix c = a.subtract(b);
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                assertEquals(a.at(i, j) - b.at(i, j), c.at(i, j), 0.0,
+                        "Mismatch at (" + i + "," + j + "), n=" + n);
+            }
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {1, 50, 100})
+    void testAdd_addZeroSquareMatrix(int n) {
+        Matrix a = randomSquare(n);
+        Matrix z = zeroSquare(n);
+
+        Matrix c = a.add(z);
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                assertEquals(a.at(i, j), c.at(i, j), 0.0,
+                        "Mismatch at (" + i + "," + j + "), n=" + n);
+            }
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {1, 50, 100})
+    void testSubtract_subtractZeroSquareMatrix(int n) {
+        Matrix a = randomSquare(n);
+        Matrix z = zeroSquare(n);
+
+        Matrix c = a.subtract(z);
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                assertEquals(a.at(i, j), c.at(i, j), 0.0,
+                        "Mismatch at (" + i + "," + j + "), n=" + n);
+            }
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {1, 50, 100})
+    void testDot_multiplyByIdentityMatrix(int n) {
+        Matrix a = randomSquare(n);
+        Matrix i = identity(n);
+
+        Matrix right = a.dot(i);
+        Matrix left = i.dot(a);
+
+        assertMatrixEqualsByAt(right, a);
+        assertMatrixEqualsByAt(left, a);
+    }
+
+    @ParameterizedTest
+    @MethodSource("rectangularSameSizePairs")
+    void testAdd_randomRectangularMatrices(int n, int m) {
+        Matrix a = randomRect(n, m);
+        Matrix b = randomRect(n, m);
+
+        Matrix c = a.add(b);
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                assertEquals(a.at(i, j) + b.at(i, j), c.at(i, j), 0.0,
+                        "Mismatch at (" + i + "," + j + "), size=" + n + "x" + m);
+            }
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("rectangularSameSizePairs")
+    void testSubtract_randomRectangularMatrices(int n, int m) {
+        Matrix a = randomRect(n, m);
+        Matrix b = randomRect(n, m);
+
+        Matrix c = a.subtract(b);
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                assertEquals(a.at(i, j) - b.at(i, j), c.at(i, j), 0.0,
+                        "Mismatch at (" + i + "," + j + "), size=" + n + "x" + m);
+            }
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("dotDifferentSizePairs")
+    void testDot_multiplyDifferentSizeMatrices(int aN, int aM, int bN, int bM) {
+        Matrix a = randomRect(aN, aM);
+        Matrix b = randomRect(bN, bM);
+
+        Matrix actual = a.dot(b);
+        Matrix expected = manualDot(a, b);
+
+        assertMatrixEqualsByAt(actual, expected);
+    }
+
+    @Test
+    void testAdd_largeConstant3x3Matrices() {
+        Matrix a = constantSquare(3, 10_000.0);
+        Matrix b = constantSquare(3, 10_000.0);
+
+        Matrix c = a.add(b);
+
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                assertEquals(20_000.0, c.at(i, j), 0.0, "Mismatch at (" + i + "," + j + ")");
+            }
+        }
+    }
+
+    @Test
+    void testSubtract_largeConstant3x3Matrices() {
+        Matrix a = constantSquare(3, 10_000.0);
+        Matrix b = constantSquare(3, -10_000.0);
+
+        Matrix c = a.subtract(b); // 10k - (-10k) = 20k
+
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                assertEquals(20_000.0, c.at(i, j), 0.0, "Mismatch at (" + i + "," + j + ")");
+            }
+        }
+    }
+
+    @Test
+    void testDot_largeConstant3x3Matrices() {
+        Matrix p = constantSquare(3, 10_000.0);
+        Matrix n = constantSquare(3, -10_000.0);
+
+        double pp = 300_000_000.0;
+        double pn = -300_000_000.0;
+        double nn = 300_000_000.0;
+
+        Matrix ppRes = p.dot(p);
+        Matrix pnRes = p.dot(n);
+        Matrix nnRes = n.dot(n);
+
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                assertEquals(pp, ppRes.at(i, j), NumberUtils.DEFAULT_THRESHOLD, "p·p mismatch at (" + i + "," + j + ")");
+                assertEquals(pn, pnRes.at(i, j), NumberUtils.DEFAULT_THRESHOLD, "p·n mismatch at (" + i + "," + j + ")");
+                assertEquals(nn, nnRes.at(i, j), NumberUtils.DEFAULT_THRESHOLD, "n·n mismatch at (" + i + "," + j + ")");
+            }
+        }
+    }
+
+    @Test
+    void testAdd_mismatchSizes_throws() {
+        Matrix a = randomRect(3, 4);
+        Matrix b = randomRect(3, 5);
+        assertThrows(IllegalArgumentException.class, () -> a.add(b));
+    }
+
+    @Test
+    void testSubtract_mismatchSizes_throws() {
+        Matrix a = randomRect(10, 10);
+        Matrix b = randomRect(10, 9);
+        assertThrows(IllegalArgumentException.class, () -> a.subtract(b));
+    }
+
+    @Test
+    void testDot_mismatchSizes_throws() {
+        Matrix a = randomRect(3, 4);
+        Matrix b = randomRect(5, 2); // a.m=4 != b.n=5
+        assertThrows(IllegalArgumentException.class, () -> a.dot(b));
     }
 }
