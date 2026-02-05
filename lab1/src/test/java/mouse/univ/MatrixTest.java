@@ -168,6 +168,19 @@ class MatrixTest {
     }
 
     @ParameterizedTest
+    @ValueSource(doubles = {
+            -10_000, -100, -10, -1, 0, 1, 10, 100, 10_000
+    })
+    void testSet_setsNewValueAndReturnsPrevious(double newValue) {
+        Matrix matrix = Matrix.square(1).withNumbers(new Double[]{11.0});
+
+        double previous = matrix.set(0, 0, newValue);
+
+        assertEquals(11.0, previous, 0.0, "Returned previous value is incorrect");
+        assertEquals(newValue, matrix.at(0, 0), 0.0, "New value was not set correctly");
+    }
+
+    @ParameterizedTest
     @ValueSource(ints = {1, 3, 10, 100})
     void row_shouldReturnCorrectRowElements(int n) {
         Matrix matrix = randomSquare(n);
