@@ -122,10 +122,10 @@ class MatrixTest {
     @Test
     void testConstructor_allowedMatrixValues() {
         testAllowedNumber(0);
-        testAllowedNumber(10000);
-        testAllowedNumber(-10000);
-        testAllowedNumber(5000);
-        testAllowedNumber(-5000);
+        testAllowedNumber(100000);
+        testAllowedNumber(-100000);
+        testAllowedNumber(50000);
+        testAllowedNumber(-50000);
     }
 
     private void assertAllZero(Matrix m) {

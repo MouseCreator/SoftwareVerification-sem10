@@ -124,6 +124,12 @@ public class Matrix {
     }
 
     public double at(int i, int j) {
+        if (i < 0 || i >= n) {
+            throw new IllegalArgumentException("Index " + i + " out of bounds of number of rows " + n);
+        }
+        if (j < 0 || j >= m) {
+            throw new IllegalArgumentException("Index " + j + " out of bounds of number of columns " + m);
+        }
         return this.array[i][j];
     }
 
