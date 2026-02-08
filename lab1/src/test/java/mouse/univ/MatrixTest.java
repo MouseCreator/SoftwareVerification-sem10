@@ -180,6 +180,27 @@ class MatrixTest {
         assertEquals(newValue, matrix.at(0, 0), 0.0, "New value was not set correctly");
     }
 
+    @Test
+    void testSet_throwsOnIncorrectAccess() {
+        Matrix matrix = randomSquare(3);
+
+        assertThrows(IllegalArgumentException.class, () -> matrix.set(-1, 0, 3));
+        assertThrows(IllegalArgumentException.class, () -> matrix.set(0, -1, 3));
+        assertThrows(IllegalArgumentException.class, () -> matrix.set(-1, -1, 3));
+
+        assertThrows(IllegalArgumentException.class, () -> matrix.set(3, 0, 3));
+        assertThrows(IllegalArgumentException.class, () -> matrix.set(0, 3, 3));
+        assertThrows(IllegalArgumentException.class, () -> matrix.set(3, 3, 3));
+
+        assertThrows(IllegalArgumentException.class, () -> matrix.at(-1, 0));
+        assertThrows(IllegalArgumentException.class, () -> matrix.at(0, -1));
+        assertThrows(IllegalArgumentException.class, () -> matrix.at(-1, -1));
+
+        assertThrows(IllegalArgumentException.class, () -> matrix.at(3, 0));
+        assertThrows(IllegalArgumentException.class, () -> matrix.at(0, 3));
+        assertThrows(IllegalArgumentException.class, () -> matrix.at(3, 3));
+    }
+
     @ParameterizedTest
     @ValueSource(ints = {1, 3, 10, 100})
     void row_shouldReturnCorrectRowElements(int n) {
@@ -314,8 +335,6 @@ class MatrixTest {
         );
     }
 
-    // ---------- correct data ----------
-
     @ParameterizedTest
     @ValueSource(ints = {1, 50, 100})
     void testAdd_randomSquareMatrices(int n) {
@@ -439,28 +458,28 @@ class MatrixTest {
 
     @Test
     void testAdd_largeConstant3x3Matrices() {
-        Matrix a = constantSquare(3, 10_000.0);
-        Matrix b = constantSquare(3, 10_000.0);
+        Matrix a = constantSquare(3, 100_000.0);
+        Matrix b = constantSquare(3, 100_000.0);
 
         Matrix c = a.add(b);
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                assertEquals(20_000.0, c.at(i, j), 0.0, "Mismatch at (" + i + "," + j + ")");
+                assertEquals(200_000.0, c.at(i, j), 0.0, "Mismatch at (" + i + "," + j + ")");
             }
         }
     }
 
     @Test
     void testSubtract_largeConstant3x3Matrices() {
-        Matrix a = constantSquare(3, 10_000.0);
-        Matrix b = constantSquare(3, -10_000.0);
+        Matrix a = constantSquare(3, 100_000.0);
+        Matrix b = constantSquare(3, -100_000.0);
 
-        Matrix c = a.subtract(b); // 10k - (-10k) = 20k
+        Matrix c = a.subtract(b);
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                assertEquals(20_000.0, c.at(i, j), 0.0, "Mismatch at (" + i + "," + j + ")");
+                assertEquals(200_000.0, c.at(i, j), 0.0, "Mismatch at (" + i + "," + j + ")");
             }
         }
     }
