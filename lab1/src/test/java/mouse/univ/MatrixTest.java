@@ -400,19 +400,6 @@ class MatrixTest {
     }
 
     @ParameterizedTest
-    @ValueSource(ints = {1, 50, 100})
-    void testDot_multiplyByIdentityMatrix(int n) {
-        Matrix a = randomSquare(n);
-        Matrix i = identity(n);
-
-        Matrix right = a.dot(i);
-        Matrix left = i.dot(a);
-
-        assertMatrixEqualsByAt(right, a);
-        assertMatrixEqualsByAt(left, a);
-    }
-
-    @ParameterizedTest
     @MethodSource("rectangularSameSizePairs")
     void testAdd_randomRectangularMatrices(int n, int m) {
         Matrix a = randomRect(n, m);
@@ -454,6 +441,19 @@ class MatrixTest {
         Matrix expected = manualDot(a, b);
 
         assertMatrixEqualsByAt(actual, expected);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {1, 50, 100})
+    void testDot_multiplyByIdentityMatrix(int n) {
+        Matrix a = randomSquare(n);
+        Matrix i = identity(n);
+
+        Matrix right = a.dot(i);
+        Matrix left = i.dot(a);
+
+        assertMatrixEqualsByAt(right, a);
+        assertMatrixEqualsByAt(left, a);
     }
 
     @Test
