@@ -4,13 +4,13 @@ import { randomIntBetween } from 'https://jslib.k6.io/k6-utils/1.4.0/index.js';
 
 export const options = {
     stages: [
-        // Phase 1: users go from 1 to 1000 during 1 minute
-        { duration: '1m', target: 1000 },
+        // Phase 1: users go from 1 to 100 during 1 minute
+        { duration: '1m', target: 100 },
 
         // Phase 2: 1000 users work together for 3 minutes
-        { duration: '3m', target: 1000 },
+        { duration: '3m', target: 100 },
 
-        // Phase 3: users go from 1000 to 1 during 1 minute
+        // Phase 3: users go from 100 to 1 during 1 minute
         { duration: '1m', target: 1 },
     ],
 
@@ -77,6 +77,8 @@ export default function () {
         'get book by id returns correct id': (r) => Number(r.json('id')) === Number(bookId),
     });
 
+    sleep(1);
+
     /**
      * 3. Update book
      *
@@ -113,6 +115,8 @@ export default function () {
         'get books by author status is 200': (r) => r.status === 200,
         'get books by author returns array': (r) => Array.isArray(r.json()),
     });
+
+    sleep(1);
 
     /**
      * 5. Delete book
