@@ -14,10 +14,10 @@ public class ProductController {
     @GetMapping("/api/product")
     public ResponseEntity<String> getProduct(@RequestParam("a") Long a, @RequestParam("b") Long b) {
         if (a == null || a < -MAX_ALLOWED || a > MAX_ALLOWED ) {
-            return new ResponseEntity<>("Invalid value for parameter a", HttpStatus.OK);
+            return new ResponseEntity<>("Invalid value for parameter a", HttpStatus.BAD_REQUEST);
         }
         if (b == null || b < -MAX_ALLOWED || b > MAX_ALLOWED ) {
-            return new ResponseEntity<>("Invalid value for parameter b", HttpStatus.OK);
+            return new ResponseEntity<>("Invalid value for parameter b", HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(String.valueOf(a * b), HttpStatus.OK);
     }
