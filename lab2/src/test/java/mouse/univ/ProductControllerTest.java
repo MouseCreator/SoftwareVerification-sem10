@@ -68,7 +68,7 @@ class ProductControllerTest {
         mockMvc.perform(get("/api/product")
                         .param("a", "-10001")
                         .param("b", "1"))
-                .andExpect(status().isOk())
+                .andExpect(status().isBadRequest())
                 .andExpect(content().string("Invalid value for parameter a"));
     }
 
@@ -77,7 +77,7 @@ class ProductControllerTest {
         mockMvc.perform(get("/api/product")
                         .param("a", "1")
                         .param("b", "-10001"))
-                .andExpect(status().isOk())
+                .andExpect(status().isBadRequest())
                 .andExpect(content().string("Invalid value for parameter b"));
     }
 
@@ -86,7 +86,7 @@ class ProductControllerTest {
         mockMvc.perform(get("/api/product")
                         .param("a", "10001")
                         .param("b", "1"))
-                .andExpect(status().isOk())
+                .andExpect(status().isBadRequest())
                 .andExpect(content().string("Invalid value for parameter a"));
     }
 
@@ -95,7 +95,37 @@ class ProductControllerTest {
         mockMvc.perform(get("/api/product")
                         .param("a", "1")
                         .param("b", "10001"))
-                .andExpect(status().isOk())
+                .andExpect(status().isBadRequest())
                 .andExpect(content().string("Invalid value for parameter b"));
+    }
+
+    @Test
+    void shouldReturnErrorWhenAIsMissing() throws Exception {
+        mockMvc.perform(get("/api/product")
+                        .param("a", "1"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldReturnErrorWhenBIsMissing() throws Exception {
+        mockMvc.perform(get("/api/product")
+                        .param("b", "1"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldReturnErrorWhenAIsNotNumber() throws Exception {
+        mockMvc.perform(get("/api/product")
+                        .param("a", "1")
+                        .param("b", "B"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldReturnErrorWhenBIsNotNumber() throws Exception {
+        mockMvc.perform(get("/api/product")
+                        .param("a", "A")
+                        .param("b", "1"))
+                .andExpect(status().isBadRequest());
     }
 }
