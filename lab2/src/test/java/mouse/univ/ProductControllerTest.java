@@ -15,6 +15,7 @@ class ProductControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+
     @Test
     void shouldReturnProductForSimpleNumbers() throws Exception {
         mockMvc.perform(get("/api/product")
@@ -34,6 +35,12 @@ class ProductControllerTest {
                         .param("b", "6"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("-12"));
+
+        mockMvc.perform(get("/api/product")
+                        .param("a", "-9")
+                        .param("b", "-8"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("72"));
     }
 
     @Test
@@ -41,6 +48,12 @@ class ProductControllerTest {
         mockMvc.perform(get("/api/product")
                         .param("a", "123")
                         .param("b", "0"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("0"));
+
+        mockMvc.perform(get("/api/product")
+                        .param("a", "0")
+                        .param("b", "456"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("0"));
     }
