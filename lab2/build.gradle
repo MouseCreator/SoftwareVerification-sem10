@@ -13,10 +13,13 @@ dependencies {
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation "org.springframework.boot:spring-boot-test:4.0.4"
+    testImplementation 'org.springframework.boot:spring-boot-starter-test:4.0.4'
+    testImplementation "org.springframework.boot:spring-boot-starter-webmvc-test:4.0.4"
 
     implementation("org.springframework.boot:spring-boot:4.0.4")
-    implementation("org.springframework.boot:spring-boot-starter-web:4.0.4")
     implementation("org.springframework:spring-core:7.0.6")
+    implementation("org.springframework.boot:spring-boot-starter-webmvc:4.0.4")
 }
 
 test {
