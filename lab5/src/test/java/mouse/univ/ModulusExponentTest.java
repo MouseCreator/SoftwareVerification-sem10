@@ -35,9 +35,32 @@ class ModulusExponentTest {
 
     @ParameterizedTest
     @CsvSource({
+            "2, 1, 5, 2",
+            "2, 3, -5, X",
+
+    })
+    void calculate_combined(
+            int base,
+            int exponent,
+            int N,
+            String expected
+    ) {
+        if (expected.equals("X")) {
+            assertThrows(
+                    IllegalArgumentException.class,
+                    () -> ModulusExponent.calculate(base, exponent, N)
+            );
+        } else {
+            assertEquals(Integer.valueOf(expected), ModulusExponent.calculate(base, exponent, N));
+        }
+    }
+
+    @ParameterizedTest
+    @CsvSource({
             "2, 0, 5, 1",
             "1, 0, 1, 1",
             "24, 0, 25, 1",
+            "-12, 0, 25, 1",
     })
     void calculate_returnsOneWhenExponentIsZero(
             int base,
@@ -110,7 +133,7 @@ class ModulusExponentTest {
         assertEquals(expected, ModulusExponent.calculate(base, exponent, N));
     }
 
-    static List<Arguments> exponentCases = List.of(
+    static List<Arguments> exponentFieldCases = List.of(
             Arguments.of(2, 3, 10, 8),
             Arguments.of(5, 0, 10, 1),
             Arguments.of(3, 4, 10, 1),
@@ -118,7 +141,7 @@ class ModulusExponentTest {
     );
 
     @ParameterizedTest
-    @FieldSource("exponentCases")
+    @FieldSource("exponentFieldCases")
     void calculate_withFieldSource(int base, int exponent, int N, int expected) {
         assertEquals(expected, ModulusExponent.calculate(base, exponent, N));
     }
