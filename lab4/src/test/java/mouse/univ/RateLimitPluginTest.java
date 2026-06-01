@@ -69,4 +69,18 @@ class RateLimitPluginTest {
             assertTrue(accept);
         }
     }
+
+    @Test
+    @Order(8)
+    void bucketWithNewRate() {
+        rateLimitPlugin = new RateLimitPlugin(1, 1);
+    }
+
+    @Test
+    @Order(9)
+    void bucketRecoversTokens() throws InterruptedException {
+        assertTrue(rateLimitPlugin.accept(IP));
+        Thread.sleep(1000);
+        assertTrue(rateLimitPlugin.accept(IP));
+    }
 }
