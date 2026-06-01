@@ -83,4 +83,14 @@ class RateLimitPluginTest {
         Thread.sleep(1000);
         assertTrue(rateLimitPlugin.accept(IP));
     }
+
+    @Test
+    @Order(10)
+    void bucketCanFlipFlag() {
+        assertTrue(rateLimitPlugin.isActive());
+        rateLimitPlugin.setActive(false);
+        assertFalse(rateLimitPlugin.isActive());
+        rateLimitPlugin.setActive(true);
+        assertTrue(rateLimitPlugin.isActive());
+    }
 }
