@@ -17,6 +17,7 @@ class RateLimitPluginTest {
     @Order(1)
     void createRateLimiter() {
         rateLimitPlugin = new RateLimitPlugin(0.01, 3);
+        assertNotNull(rateLimitPlugin);
     }
 
     @Test
