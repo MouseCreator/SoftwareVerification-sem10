@@ -4,19 +4,19 @@ import { randomIntBetween } from 'https://jslib.k6.io/k6-utils/1.4.0/index.js';
 
 export const options = {
     stages: [
-        // Phase 1: users go from 1 to 100 during 1 minute
-        { duration: '1m', target: 100 },
+        // Phase 1: users go from 1 to 50 during 1 minute
+        { duration: '1m', target: 50 },
 
-        // Phase 2: 1000 users work together for 3 minutes
-        { duration: '3m', target: 100 },
+        // Phase 2: 50 users work together for 3 minutes
+        { duration: '3m', target: 50 },
 
-        // Phase 3: users go from 100 to 1 during 1 minute
+        // Phase 3: users go from 50 to 1 during 1 minute
         { duration: '1m', target: 1 },
     ],
 
     thresholds: {
         http_req_failed: ['rate<0.05'],
-        http_req_duration: ['p(95)<1000'],
+        http_req_duration: ['p(95)<100'],
     },
 };
 

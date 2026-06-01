@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import mouse.univ.lab3.dto.BookCreateDTO;
 import mouse.univ.lab3.dto.BookResponseDTO;
 import mouse.univ.lab3.dto.BookUpdateDTO;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,6 +17,7 @@ public class BookController {
     private final BookService service;
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public BookResponseDTO createBook(@RequestBody BookCreateDTO createDTO) {
         return service.createBook(createDTO);
     }
@@ -40,6 +42,7 @@ public class BookController {
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteById(@PathVariable Long id) {
         service.deleteBook(id);
     }
