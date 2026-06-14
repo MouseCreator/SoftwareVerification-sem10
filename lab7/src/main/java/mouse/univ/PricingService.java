@@ -15,7 +15,7 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
-public class PricingService {
+public class PricingService implements PricingServiceContract {
 
     private ItemRepository itemRepository;
     private DiscountRepository discountRepository;
