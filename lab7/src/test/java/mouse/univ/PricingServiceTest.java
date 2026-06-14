@@ -1,6 +1,7 @@
 package mouse.univ;
 
 import mouse.univ.exception.ConnectionException;
+import mouse.univ.exception.InvalidDiscountException;
 import mouse.univ.model.Item;
 import mouse.univ.repository.DiscountRepository;
 import mouse.univ.repository.ItemRepository;
@@ -8,7 +9,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import javax.sound.midi.InvalidMidiDataException;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Optional;
@@ -60,20 +60,20 @@ class PricingServiceTest {
 
     @Test
     void testItemNotFound() {
-        Mockito.when(itemMock.findById(3L)).thenReturn(
-                Optional.of(new Item(3L, "Orange Juice", new BigDecimal("80.60"))));
-        Mockito.when(discountMock.getDiscount(3L)).thenReturn(Optional.empty());
+        Mockito.when(itemMock.findById(4L)).thenReturn(
+                Optional.of(new Item(4L, "Orange Juice", new BigDecimal("80.60"))));
+        Mockito.when(discountMock.getDiscount(4L)).thenReturn(Optional.empty());
 
-        BigDecimal price = pricingService.getPrice(3L);
+        BigDecimal price = pricingService.getPrice(4L);
         assertEquals(new BigDecimal("80.60"), price);
     }
 
     @Test
     void testIllegalDiscount() {
-        Mockito.when(itemMock.findById(4L)).thenReturn(
-                Optional.of(new Item(4L, "Sandwich", new BigDecimal("300.60"))));
-        Mockito.when(discountMock.getDiscount(4L)).thenReturn(Optional.of(new BigDecimal("1.1")));
-        assertThrows(InvalidMidiDataException.class, ()->pricingService.getPrice(4L));
+        Mockito.when(itemMock.findById(5L)).thenReturn(
+                Optional.of(new Item(5L, "Sandwich", new BigDecimal("300.60"))));
+        Mockito.when(discountMock.getDiscount(5L)).thenReturn(Optional.of(new BigDecimal("1.1")));
+        assertThrows(InvalidDiscountException.class, ()->pricingService.getPrice(5L));
     }
 
     @Test
@@ -86,20 +86,50 @@ class PricingServiceTest {
                     return Optional.ofNullable(dynamicDiscounts.get(argument));
                 });
 
-        Mockito.when(itemMock.findById(5L)).thenReturn(
-                Optional.of(new Item(5L, "Soda", new BigDecimal("104.20"))));
-        BigDecimal price = pricingService.getPrice(5L);
+        Mockito.when(itemMock.findById(6L)).thenReturn(
+                Optional.of(new Item(6L, "Soda", new BigDecimal("104.20"))));
+        BigDecimal price = pricingService.getPrice(6L);
         assertEquals(new BigDecimal("104.20"), price);
 
-        dynamicDiscounts.put(5L, new BigDecimal("0.5"));
-        price = pricingService.getPrice(5L);
+        dynamicDiscounts.put(6L, new BigDecimal("0.5"));
+        price = pricingService.getPrice(6L);
         assertEquals(new BigDecimal("52.10"), price);
     }
 
     @Test
     void testTransitiveThrow() {
-        Mockito.when(itemMock.findById(3L)).thenThrow(new ConnectionException("Cannot connect to database"));
+        Mockito.when(itemMock.findById(7L)).thenThrow(new ConnectionException("Cannot connect to database"));
 
-        assertThrows(ConnectionException.class, ()-> pricingService.getPrice(3L));
+        assertThrows(ConnectionException.class, ()-> pricingService.getPrice(7L));
+    }
+
+    @Test
+    void testInvocation() {
+        Mockito.when(itemMock.findById(8L)).thenReturn(
+                Optional.of(new Item(8L, "Ketchup", new BigDecimal("19.00"))));
+        Mockito.when(discountMock.getDiscount(1L)).thenReturn(Optional.of(new BigDecimal("0.05")));
+
+        pricingService.getPrice(8L);
+
+        Mockito.verify(itemMock).findById(8L);
+        Mockito.verify(discountMock).getDiscount(8L);
+    }
+
+    @Test
+    void testDifferentDiscounts() {
+        Mockito.when(itemMock.findById(9L)).thenReturn(
+                Optional.of(new Item(9L, "Cheeseburger", new BigDecimal("100.00"))));
+        Mockito.when(discountMock.getDiscount(9L))
+                .thenReturn(Optional.of(new BigDecimal("0.2")))
+                .thenReturn(Optional.of(new BigDecimal("0.1")))
+                .thenReturn(Optional.empty());
+
+        BigDecimal price;
+        price = pricingService.getPrice(9L);
+        assertEquals(new BigDecimal("80.00"), price);
+        price = pricingService.getPrice(9L);
+        assertEquals(new BigDecimal("90.00"), price);
+        price = pricingService.getPrice(9L);
+        assertEquals(new BigDecimal("100.00"), price);
     }
 }
