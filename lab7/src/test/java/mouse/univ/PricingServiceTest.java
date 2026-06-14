@@ -1,5 +1,6 @@
 package mouse.univ;
 
+import jakarta.persistence.EntityNotFoundException;
 import mouse.univ.exception.ConnectionException;
 import mouse.univ.exception.InvalidDiscountException;
 import mouse.univ.model.Item;
@@ -59,13 +60,9 @@ class PricingServiceTest {
     }
 
     @Test
-    void testItemNotFound() {
-        Mockito.when(itemMock.findById(4L)).thenReturn(
-                Optional.of(new Item(4L, "Orange Juice", new BigDecimal("80.60"))));
-        Mockito.when(discountMock.getDiscount(4L)).thenReturn(Optional.empty());
-
-        BigDecimal price = pricingService.getPrice(4L);
-        assertEquals(new BigDecimal("80.60"), price);
+    void testDiscountNotFound() {
+        Mockito.when(itemMock.findById(4L)).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, ()->pricingService.getPrice(4L));
     }
 
     @Test
