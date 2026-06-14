@@ -1,0 +1,9 @@
+Find the shortest path between two vertices in the given oriented graph. The graph may contain hooks, but at most one edge between two vertices.
+Throw VerticesNotConnected exception if there is no path between two given vertices.
+Throw InfinitelyLowWeight exception if there is a negative cycle between two vertices.
+Throw InvalidVertex exception if the Graph doesn't contain either source or destination vertex.
+Return weight of the path if such path exists.
+Maximum number of vertices in the graph is 100, minimum is 1.
+Weight is an integer number. Maximum weight of an edge if 500, minimum weight is -500.
+If the constraints do not hold, throw InvalidGraphException.
+Minimum path weight to self equals to zero, unless the vertex is part of a negative loop.
