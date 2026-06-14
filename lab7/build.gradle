@@ -8,11 +8,30 @@ version = '1.0-SNAPSHOT'
 repositories {
     mavenCentral()
 }
+configurations {
+    mockitoAgent {
+        transitive = false
+    }
+}
 
 dependencies {
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    compileOnly("org.projectlombok:lombok:1.18.46")
+    annotationProcessor("org.projectlombok:lombok:1.18.46")
+
+    testCompileOnly("org.projectlombok:lombok:1.18.46")
+    testAnnotationProcessor("org.projectlombok:lombok:1.18.46")
+
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa:4.1.0")
+    testImplementation("org.mockito:mockito-core:5.23.0")
+    mockitoAgent 'org.mockito:mockito-core:5.23.0'
+}
+
+tasks.withType(Test).configureEach {
+    jvmArgs += "-javaagent:${configurations.mockitoAgent.asPath}"
 }
 
 test {
