@@ -128,5 +128,7 @@ class PricingServiceTest {
         assertEquals(new BigDecimal("90.00"), price);
         price = pricingService.getPrice(9L);
         assertEquals(new BigDecimal("100.00"), price);
+        price = pricingService.getPrice(9L);
+        assertEquals(new BigDecimal("100.00"), price);
     }
 }
