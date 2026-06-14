@@ -99,6 +99,9 @@ class ItemServiceImplementationTest {
         assertNotNull(itemService.getItem(id));
         itemService.deleteItem(id);
         assertThrows(EntityNotFoundException.class, ()->itemService.getItem(id));
+
+        List<ItemResponseDTO> allItems = itemService.getAllItems();
+        assertFalse(allItems.contains(savedItem));
     }
 
     @Test
