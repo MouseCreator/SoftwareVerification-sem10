@@ -26,14 +26,38 @@ public class ShortestPathFinderImpl implements ShortestPathFinder {
         validateVertexCount(vertices);
         validateRequestedVertices(vertices, from, to);
 
-        Map<String, Integer> distances = new HashMap<>();
+        Map<String, Integer> distances = initDistances(from, vertices);
 
-        for (String vertex : vertices) {
-            distances.put(vertex, INF);
+        calculateDistancesFromSource(vertices, edges, distances);
+
+        validateNoNegativeLoops(edges, distances);
+
+        return validateOutputAndReturn(to, distances);
+    }
+
+    private static int validateOutputAndReturn(String to, Map<String, Integer> distances) {
+        int result = distances.get(to);
+        if (result == INF) {
+            throw new VerticesNotConnectedException();
         }
+        return result;
+    }
 
-        distances.put(from, 0);
+    private static void validateNoNegativeLoops(List<Edge> edges, Map<String, Integer> distances) {
+        for (Edge edge : edges) {
+            String source = edge.getSource();
+            String target = edge.getDestination();
+            int weight = edge.getWeight();
 
+            int sourceDistance = distances.get(source);
+
+            if (sourceDistance != INF && sourceDistance + weight < distances.get(target)) {
+                throw new InfinitelyLowWeightException();
+            }
+        }
+    }
+
+    private static void calculateDistancesFromSource(Set<String> vertices, List<Edge> edges, Map<String, Integer> distances) {
         int vertexCount = vertices.size();
 
         for (int i = 0; i < vertexCount - 1; i++) {
@@ -56,26 +80,17 @@ public class ShortestPathFinderImpl implements ShortestPathFinder {
                 break;
             }
         }
+    }
 
-        for (Edge edge : edges) {
-            String source = edge.getSource();
-            String target = edge.getDestination();
-            int weight = edge.getWeight();
+    private static Map<String, Integer> initDistances(String from, Set<String> vertices) {
+        Map<String, Integer> distances = new HashMap<>();
 
-            int sourceDistance = distances.get(source);
-
-            if (sourceDistance != INF && sourceDistance + weight < distances.get(target)) {
-                throw new InfinitelyLowWeightException();
-            }
+        for (String vertex : vertices) {
+            distances.put(vertex, INF);
         }
 
-        int result = distances.get(to);
-
-        if (result == INF) {
-            throw new VerticesNotConnectedException();
-        }
-
-        return result;
+        distances.put(from, 0);
+        return distances;
     }
 
     private void validateGraphNotNull(Graph graph) {
