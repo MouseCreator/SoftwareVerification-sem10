@@ -3,7 +3,7 @@ package mouse.univ;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
-import mouse.univ.model.InvalidDiscountException;
+import mouse.univ.exception.InvalidDiscountException;
 import mouse.univ.model.Item;
 import mouse.univ.repository.DiscountRepository;
 import mouse.univ.repository.ItemRepository;

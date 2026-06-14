@@ -1,4 +1,4 @@
-package mouse.univ.model;
+package mouse.univ.exception;
 
 public class InvalidDiscountException extends RuntimeException {
     public InvalidDiscountException() {
